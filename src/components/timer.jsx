@@ -10,19 +10,19 @@ const timeData = () => {
 
 export const Timer = ({ onDelete }) => {
     const [time, setTime] = useState(timeData)
-    const [isPaused, setIsPaused] = useState(false)
+    const [isActive, setIsActive] = useState(true)
     const [intervalId, setIntervalId] = useState(null)
 
-    const handlePause = () => setIsPaused(true)
-    const handleContinue = () => setIsPaused(false)
+    const handlePause = () => setIsActive(false)
+    const handleContinue = () => setIsActive(true)
     const handleDelete = () => {
         clearInterval(intervalId)
         onDelete()
     }
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (!isPaused) {
+        if (isActive) {
+            const interval = setInterval(() => {
                 setTime(({ minutes, seconds }) => {
                     seconds -= 1
                     if (seconds < 0) {
@@ -31,33 +31,33 @@ export const Timer = ({ onDelete }) => {
                     }
                     return { minutes, seconds }
                 })
-            }
-        }, 1000)
+            }, 1000)
 
-        setIntervalId(interval)
-        return () => clearInterval(interval)
-    }, [isPaused])
+            setIntervalId(interval)
+            return () => clearInterval(interval)
+        }
+    }, [isActive])
 
     return (
         <section className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md">
             <div className="text-4xl font-bold mb-4 text-gray-800">
                 {String(time.minutes).padStart(2, '0')}:{String(time.seconds).padStart(2, '0')}
             </div>
-            <div className="space-x-4">
+            <div className="space-x-4 space-y-3">
                 <button
                     onClick={handlePause}
-                    disabled={isPaused}
+                    disabled={!isActive}
                     className={`px-4 py-2 rounded-lg text-white font-semibold 
-                        ${isPaused ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-400'}`
+                        ${!isActive ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-400 hover:bg-orange-500'}`
                     }
                 >
                     Pause
                 </button>
                 <button
                     onClick={handleContinue}
-                    disabled={!isPaused}
+                    disabled={isActive}
                     className={`px-4 py-2 rounded-lg text-white font-semibold 
-                        ${!isPaused ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`
+                        ${isActive ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`
                     }
                 >
                     Continue
